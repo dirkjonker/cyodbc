@@ -4,13 +4,6 @@ cimport sql
 cimport sqlext
 
 
-TYPE_MAP = {
-    sql.SQL_SMALLINT: sqlext.SQL_C_SHORT,
-    sql.SQL_INTEGER: sqlext.SQL_C_LONG,
-    sql.SQL_CHAR: sqlext.SQL_C_CHAR,
-}
-
-
 cdef void get_info(sql.SQLRETURN ret, sql.SQLSMALLINT handle_type,
         sql.SQLHANDLE handle):
     """Check status code and retrieve diagnostic info"""
@@ -237,7 +230,6 @@ cdef class Cursor:
         self.array_loc += 1
         if self.array_loc == self.arraysize:
             self.array_loc = 0
-            # print("resetting the stuffs")
         return row
 
     cpdef fetch(self):
