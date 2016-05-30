@@ -18,8 +18,8 @@ SELECT 20,000 rows with 10 columns of different column types
 with `cursor.arraysize` set to 100:
 
     pyodbc
-    average time (of 10 runs): 3.2811s
+    average time (of 10 runs): 3.5033s
     ceODBC
-    average time (of 10 runs): 0.0633s
+    average time (of 10 runs): 0.0647s
     cyodbc
-    average time (of 10 runs): 0.0596s
+    average time (of 10 runs): 0.0649s

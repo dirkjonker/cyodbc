@@ -284,7 +284,7 @@ cdef class Cursor:
                 row.append(None)
                 continue
             if col_type == sqlext.SQL_C_CHAR:
-                row.append(<char*> self.col_values[i] + size)
+                row.append((<char*> self.col_values[i] + size).decode('utf-8'))
             elif col_type == sqlext.SQL_C_LONG:
                 row.append((<int*> self.col_values[i] + size)[0])
             elif col_type == sqlext.SQL_C_SHORT:
@@ -311,18 +311,15 @@ cdef class Cursor:
         get_info(ret, sql.SQL_HANDLE_STMT, self.h_stmt)
         self.closed = True
 
-    cpdef fetch(self):
+    def fetchone(self):
         return self.c_fetch()
-
-    def set_arraysize(self, n):
-        self.arraysize = n
 
     def fetchmany(self, n=None):
         if n is None:
             n = self.arraysize
         rows = []
         for i in range(n):
-            r = self.fetch()
+            r = self.c_fetch()
             if r is None:
                 break
             rows.append(r)
@@ -331,7 +328,7 @@ cdef class Cursor:
     def fetchall(self):
         rows = []
         while True:
-            r = self.fetch()
+            r = self.c_fetch()
             if r is None:
                 break
             rows.append(r)
