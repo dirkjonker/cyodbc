@@ -12,7 +12,7 @@ cdef void get_info(sql.SQLRETURN ret, sql.SQLSMALLINT handle_type,
     elif ret == sql.SQL_SUCCESS_WITH_INFO:
         print("Success, but with info")
     else:
-        print("No success...")
+        print("No success... status code: {}".format(ret))
     cdef sql.SQLCHAR state[8]
     cdef sql.SQLINTEGER native
     cdef sql.SQLCHAR text[255]
@@ -132,6 +132,12 @@ cdef class Cursor:
             elif data_type == sqlext.SQL_BIGINT:
                 out_type = sqlext.SQL_C_SBIGINT
                 alloc_size = sizeof(long) * column_size
+            elif data_type == sql.SQL_REAL:
+                out_type = sqlext.SQL_C_FLOAT
+                alloc_size = sizeof(float) * column_size
+            elif data_type in (sql.SQL_FLOAT, sql.SQL_DOUBLE):
+                out_type = sqlext.SQL_C_DOUBLE
+                alloc_size = sizeof(double) * column_size
             else:
                 out_type = sqlext.SQL_C_CHAR
                 alloc_size = sizeof(char) * column_size + 1
@@ -153,7 +159,6 @@ cdef class Cursor:
                 odbc_size, self.rowstatus[i]
             )
             get_info(ret, sql.SQL_HANDLE_STMT, self.h_stmt)
-            print("bound col")
 
     cdef set_attributes(self):
         cdef sql.SQLRETURN ret
@@ -191,10 +196,6 @@ cdef class Cursor:
         """Try and fetch some rows"""
         cdef sql.SQLRETURN ret
         cdef int col_type
-        cdef char* val_ch
-        cdef short int val_short
-        cdef int val_int
-        cdef long val_long
         cdef int rs
         cdef int size
 
@@ -212,17 +213,17 @@ cdef class Cursor:
                 row.append(None)
                 continue
             if col_type == sqlext.SQL_C_CHAR:
-                val_ch = <char*> self.columns[i] + size
-                row.append(val_ch[:rs])
+                row.append(<char*> self.columns[i] + size)
             elif col_type == sqlext.SQL_C_LONG:
-                val_int = (<int*> self.columns[i] + size)[0]
-                row.append(val_int)
+                row.append((<int*> self.columns[i] + size)[0])
             elif col_type == sqlext.SQL_C_SHORT:
-                val_short = (<short*> self.columns[i] + size)[0]
-                row.append(val_short)
+                row.append((<short*> self.columns[i] + size)[0])
             elif col_type == sqlext.SQL_C_SBIGINT:
-                val_long = (<long*> self.columns[i] + size)[0]
-                row.append(val_long)
+                row.append((<long*> self.columns[i] + size)[0])
+            elif col_type == sqlext.SQL_C_FLOAT:
+                row.append((<float*> self.columns[i] + size)[0])
+            elif col_type == sqlext.SQL_C_DOUBLE:
+                row.append((<double*> self.columns[i] + size)[0])
             else:
                 print("unsupported type: {}".format(col_type))
                 row.append(None)
