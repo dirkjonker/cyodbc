@@ -13,6 +13,8 @@ cdef extern from "sqlext.h":
     cdef sqltypes.SQLUSMALLINT SQL_DRIVER_COMPLETE_REQUIRED
 
     cdef int SQL_ATTR_ROW_ARRAY_SIZE
+    cdef int SQL_ATTR_ROW_STATUS_PTR
+    cdef int SQL_ATTR_ROWS_FETCHED_PTR
 
     # SQL extended datatypes
     cdef int SQL_DATE

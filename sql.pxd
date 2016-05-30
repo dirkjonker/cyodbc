@@ -52,9 +52,16 @@ cdef extern from "sql.h":
             SQLSMALLINT *DataType, SQLULEN *ColumnSize,
             SQLSMALLINT *DecimalDigits, SQLSMALLINT *Nullable)
 
+    cdef SQLRETURN SQLDisconnect(SQLHDBC ConnectionHandle)
+
+    cdef SQLRETURN SQLExecDirect(SQLHSTMT StatementHandle,
+            SQLCHAR *StatementText, SQLINTEGER TextLength)
+
     cdef SQLRETURN SQLExecute(SQLHSTMT StatementHandle)
 
     cdef SQLRETURN SQLFetch(SQLHSTMT StatementHandle)
+
+    cdef SQLRETURN SQLFreeHandle(SQLSMALLINT HandleType, SQLHANDLE Handle)
 
     cdef SQLRETURN SQLGetDiagRec(SQLSMALLINT HandleType, SQLHANDLE Handle,
             SQLSMALLINT RecNumber, SQLCHAR *Sqlstate, SQLINTEGER *NativeError,
